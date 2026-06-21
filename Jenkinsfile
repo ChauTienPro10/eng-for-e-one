@@ -21,7 +21,7 @@ pipeline {
             steps {
                 echo '--- Đang tiến hành build Security Service ---'
                 dir('source/01.backend/securityService') {
-                    sh 'mvn clean package -DskipTests'
+                    sh 'mvn clean package -DskipTests -Dfile.encoding=UTF-8'
                 }
             }
         }
@@ -43,7 +43,7 @@ pipeline {
                 echo '--- Đang tiến hành build Category Management ---'
                 // Trỏ sang đường dẫn của dự án thứ hai
                 dir('source/01.backend/categoryManagement') {
-                    sh 'mvn clean package -DskipTests'
+                    sh 'mvn clean package -DskipTests -Dfile.encoding=UTF-8'
                 }
             }
         }
@@ -65,7 +65,7 @@ pipeline {
                 echo '--- Đang tiến hành build User Management ---'
                 // Trỏ sang đường dẫn của dự án thứ hai
                 dir('source/01.backend/userManagement') {
-                    sh 'mvn clean package -DskipTests'
+                    sh 'mvn clean package -DskipTests -Dfile.encoding=UTF-8'
                 }
             }
         }
