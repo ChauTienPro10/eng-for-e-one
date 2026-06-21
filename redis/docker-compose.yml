@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis_server
+    command: redis-server --appendonly yes --requirepass 123456
+    # --appendonly yes: Bật tính năng lưu dữ liệu xuống đĩa cứng để không bị mất khi restart
+    # --requirepass 123456: Đặt mật khẩu kết nối là 123456 (Xóa đoạn này nếu muốn không dùng mật khẩu)
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - main-net
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis_insight
+    ports:
+      - "5540:5540" # Cổng truy cập giao diện quản lý trên trình duyệt
+    depends_on:
+      - redis
+    networks:
+      - main-net
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  main-net:
+    external: true

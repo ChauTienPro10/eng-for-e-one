@@ -1,0 +1,51 @@
+cells:
+  - kind: 2
+    value: SELECT COUNT(*) AS tong_so_user FROM all_users;
+    languageId: oracle-sql
+  - kind: 2
+    value: "SELECT username, created \r
+
+      FROM all_users \r
+
+      ORDER BY username;"
+    languageId: oracle-sql
+  - kind: 2
+    value: CREATE USER SECURITY_DB IDENTIFIED BY tien22012003
+    languageId: oracle-sql
+  - kind: 2
+    value: GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW, CREATE SEQUENCE TO
+      SECURITY_DB;
+    languageId: oracle-sql
+  - kind: 2
+    value: ALTER USER SECURITY_DB QUOTA UNLIMITED ON USERS;
+    languageId: oracle-sql
+  - kind: 2
+    value: ALTER SESSION SET CONTAINER = CDB$ROOT;
+    languageId: oracle-sql
+  - kind: 2
+    value: "-- 2. Chạy lệnh tạo PDB với đường dẫn chuẩn /opt/oracle/...\r
+
+      CREATE PLUGGABLE DATABASE SECURITY_PDB \r
+
+      ADMIN USER SECURITY_DB IDENTIFIED BY tien22012003\r
+
+      ROLES = (DBA)\r
+
+      FILE_NAME_CONVERT = ('/opt/oracle/oradata/FREE/pdbseed/',
+      '/opt/oracle/oradata/FREE/security_pdb/');\r
+
+      \r
+
+      -- 3. Kích hoạt mở cửa Database mới tạo\r
+
+      ALTER PLUGGABLE DATABASE SECURITY_PDB OPEN;\r
+
+      \r
+
+      -- 4. Lưu trạng thái tự động bật khi khởi động lại Docker\r
+
+      ALTER PLUGGABLE DATABASE SECURITY_PDB SAVE STATE;"
+    languageId: oracle-sql
+  - kind: 2
+    value: SELECT name, open_mode FROM v$pdbs;
+    languageId: oracle-sql

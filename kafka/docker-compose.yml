@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: kafka_kraft
+    ports:
+      - "9092:9092" # Cổng duy nhất mở ra máy thật của bạn
+    environment:
+      - KAFKA_NODE_ID=1
+      - KAFKA_PROCESS_ROLES=broker,controller
+      
+      # SỬA: Phải đổi tên kết nối controller thành kafka_kraft cho đúng với container_name của bạn
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka_kraft:9093
+      
+      # SỬA 1: Thêm CLIENT_INTERNAL://0.0.0.0:9094 vào danh sách lắng nghe
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,CLIENT_INTERNAL://0.0.0.0:9094
+      
+      # Giữ nguyên cấu hình chuẩn của bạn
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,CLIENT_INTERNAL://kafka_kraft:9094
+      
+      # SỬA 2: Định nghĩa CLIENT_INTERNAL:PLAINTEXT vào map bảo mật
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,CLIENT_INTERNAL:PLAINTEXT
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_LOG_DIRS=/var/lib/kafka/data
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - main-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka_ui
+    ports:
+      - "8090:8080" # Lưu ý quan trọng: Container gốc của UI chạy 8080, ánh xạ ra ngoài máy bạn là 8090
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local-kraft-cluster
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka_kraft:9094 # Giữ nguyên cấu hình đúng này của bạn
+    depends_on:
+      - kafka
+    networks:
+      - main-net
+
+volumes:
+  kafka_data:
+    driver: local
+
+networks:
+  main-net:
+    external: true

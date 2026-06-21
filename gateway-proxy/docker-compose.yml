@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  
+  # --- 1. CONTAINER MIGRATIONS ---
+  kong-migrations:
+    image: kong:3.6
+    container_name: kong-migrations
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres_server_container       # <-- THAY ĐỔI Ở ĐÂY (Xem giải thích bên dưới)
+      KONG_PG_PORT: 5432
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: tien22012003
+      KONG_PG_DATABASE: kong-database
+    networks:
+      - kong-net
+      - main-net
+    command: kong migrations bootstrap
+
+  # --- 2. CONTAINER KONG GATEWAY ---
+  kong:
+    image: kong:3.6
+    container_name: kong-gateway
+    extra_hosts:
+      - "host.docker.internal:10.20.1.104"
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres_server_container         # <-- THAY ĐỔI Ở ĐÂY (Xem giải thích bên dưới)
+      KONG_PG_PORT: 5432
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: tien22012003
+      KONG_PG_DATABASE: kong-database
+      
+      KONG_PROXY_LISTEN: 0.0.0.0:8000, 0.0.0.0:8443 ssl
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+      KONG_ADMIN_GUI_LISTEN: 0.0.0.0:8002
+      KONG_ADMIN_GUI_URL: http://localhost:8002
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8002:8002"
+      - "8001:8001"
+    networks:
+      - kong-net
+      - main-net
+
+
+networks:
+  kong-net:
+    driver: bridge
+  main-net:
+    external: true
