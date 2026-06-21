@@ -3,6 +3,7 @@ pipeline {
 
     tools {
         jdk 'Java_17' // Gọi tên JDK 17 bạn cài ở giao diện
+        maven 'Maven_3'
     }
 
     stages {
