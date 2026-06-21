@@ -6,6 +6,9 @@ pipeline {
             args '-v $HOME/.m2:/root/.m2'
         }
     }
+    tools {
+        dockerTool 'Moby-Docker' 
+    }
 
     stages {
         stage('Kiểm tra phiên bản') {
