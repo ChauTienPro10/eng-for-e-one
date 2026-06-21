@@ -1,13 +1,8 @@
 pipeline {
-    agent {
-        docker { 
-            // Vẫn sử dụng chung môi trường Maven Java 17
-            image 'maven:3.9-eclipse-temurin-17' 
-            args '-v $HOME/.m2:/root/.m2'
-        }
-    }
+    agent any 
+
     tools {
-        dockerTool 'Moby-Docker' 
+        jdk 'Java_17' // Gọi tên JDK 17 bạn cài ở giao diện
     }
 
     stages {
